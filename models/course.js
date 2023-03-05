@@ -19,6 +19,27 @@ class Course {
     };
   }
 
+  static async update(course) {
+    const courses = await Course.getAll();
+
+    const idx = courses.findIndex(item => item.id === course.id);
+    courses[idx] = course;
+
+    return new Promise((resolve, reject) => {
+      fs.writeFile(
+        path.join(__dirname, '..', 'data', 'courses.json'),
+        JSON.stringify(courses),
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      )
+    })
+  }
+
   async save() {
     const courses = await Course.getAll();
     courses.push(this.toJSON());
@@ -31,7 +52,7 @@ class Course {
           if (err) {
             reject(err);
           } else {
-            resolve()
+            resolve();
           }
         }
       )
@@ -47,11 +68,16 @@ class Course {
           if (err) {
             reject(err);
           } else {
-            resolve(JSON.parse(content))
+            resolve(JSON.parse(content));
           }
         }
       )
     })
+  }
+
+  static async getById(id) {
+    const courses = await Course.getAll();
+    return courses.find(item => item.id === id);
   }
 }
 
